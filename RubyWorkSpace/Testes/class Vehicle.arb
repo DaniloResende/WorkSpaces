@@ -1,0 +1,37 @@
+class Vehicle
+  attr_reader :plate
+
+  def initialize(plate)
+    @plate = plate
+  end
+end
+
+class ParkingLot
+  def initialize(license_rules, vehicles)
+    @license_rules = license_rules
+    @vehicles = vehicles
+  end
+
+  def license_plates_verification
+    @vehicles.map do |vehicle|
+      is_valid = true
+
+      vehicle.plate.chars.each_with_index do |char, index|
+        if @license_rules[index] == 'L' && !char.match?(/[A-Za-z]/)
+          is_valid = false
+          break
+        elsif @license_rules[index] == 'N' && !char.match?(/[0-9]/)
+          is_valid = false
+          break
+        end
+      end
+
+      is_valid ? 'Válido' : 'Inválido'
+    end
+  end
+end
+
+vehicles = [Vehicle.new('ABC1D2A'), Vehicle.new('ALQ4M7S')]
+parking_lot = ParkingLot.new('LLLNLNL', vehicles)
+
+puts parking_lot.license_plates_verification  # ["Válido", "Inválido"]
