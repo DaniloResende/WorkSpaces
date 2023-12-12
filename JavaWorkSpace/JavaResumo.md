@@ -596,3 +596,4 @@ public interface Interface {
 }
 ```
 - ``Interfaces potencializam o Polimorfismo`` ao seu nivel MAXIMO!
+- Interfaces usam modificadores PUBLIC OU PRIVATE. nao podemos usar default ou protected
