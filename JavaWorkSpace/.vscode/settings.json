@@ -1,5 +1,9 @@
 {
     "java.project.sourcePaths": [
         ""
-    ]
+    ],
+    "autoSaveExt": {
+        "debounce": 1000, // default is 500
+        "extensions": [".md"] // if no extension set will be applied to all files
+    }
 }

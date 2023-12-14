@@ -582,17 +582,78 @@ public abstract void metodoAbstrato();
 - **IMPORTANTE** ``uma classe concreta (folha) na base da hierarquia de herança é responsável por implementar todos os métodos abstratos que não foram implementados em qualquer ponto na cadeia de herança.``
 
 ### Interfaces
+- Sintaxe para usar a interface -> ``public class ClasseConcreta implements ClasseInterface{}``
+- Por que usar as ``interfaces`` no lugar das ``abstracts``? Nivel de abstracao das inferfaces é um nivel de abstração ainda maior que as classes abstratas. 
+- Outro motivo:`` Uma classe pode implementar varias interfaces, mas somente herdar de uma classe.``
 
 - ``Interface`` -> é um contrato, que a classe que implementa-la deve cumprir.  A interface dita a regra e a que implements ela assina o papel. 
 - Nao se pode mudar a interface, pois quebraria o codigo de todas as classes que a implementam.
     - Exemplo: alterar o padrao/contrato/interface da exposicao das marchas do carro -> confundiria todos os motoristas. 
 - `` Interface: Diz O QUE  deve fazer, e nao COMO.``
-- ``Interface`` -> nao tem atributos, somente metodos abstratos e constantes. `public static final ja é IMPLICITO ao declarar qualquer variavel. Precisam ser atribuidas valores na declaracao`
+- ``Interface`` -> nao tem atributos, somente CONSTANTES e métodos abstratos. `public static final ja é IMPLICITO ao declarar qualquer variavel. Precisam ser atribuidas valores na declaracao`
+- Assim como abstract classes, interfaces nao podem ser instanciadas.
 ```Java
-public interface Interface {
+public interface ClasseInterface {
     //public static final int CONSTANTE = 1; IMPLICITO
+
+    //public static final ja é implicito em atributos de interfaces
     int CONSTANTE = 1;
     public abstract void metodo();
+    // o public abstract ja esta implicito em metodos de interfaces
+    void metodo2(); // IMPLICITO
 }
 ```
+- `Caso nao coloquemo public abstract na declaracao do metodo, o compilador coloca implicitamente em INTERFACES`
 - ``Interfaces potencializam o Polimorfismo`` ao seu nivel MAXIMO!
+- ``Interfaces`` -> nao podem ser instanciadas, somente implementadas por classes concretas.
+-  É possivel implementar os metodos abstratos na propria interface a partir do java 8, mas nao é uma boa pratica. 
+- ![Alt text](image.png)
+- Classe Servico conta Usa instancias das classes documentoPagavel e Beneficiario, Isso explica as setas apontando (seta tracejada com triangulo vazio)  de Servico para essas duas classes(Associacoes normais). Ja heranca(Seta inteira com trinagulo vazio) seria a seta -|>
+- Herança : ![Alt text](image-3.png) 
+- Interface: - - - -|>
+- ``Servico Conta Pagar TEM UM DocumentoPagavel e TEM UM Beneficiario, pois sao atributos da classe ServicoContaPagar.``
+- Quando voce implementa uma classe, ``nos argumentos do tipo da interfaces``, voce pode passar qualquer classe que implemente essa interface, pois ela cumpre o contrato da interface. Realiza um upcasting implicito nesses parametros.
+- Usar interfaces para definir os TIPOS PASSADOS POR PARAMETRO, para aumentar a flexibilidade do seu metodo. BAIXO ACOPLAMENTO.Quanto mais imports, mais acoplamento. exemplo: 
+- a classe que tem metodos com tipos de parametros da interface nao necessariamente implementa a interface, somente as classes que serao passadas como argumento implementam a interface.
+![Alt text](image-2.png)
+
+- Nesse exemplo: As classes Pix e Transferencia implementam MetodoPagamento, ServicoContaPagar Recebe no construtor a instancia de Pix ou de Transferencia (Pois o tipo MetodoPagamento 
+é somente a interface dos dois, para garantir a flexibilidade do metodo). 
+```Java
+public void metodo(ClasseInterface classeInterface){
+     classeInterface.metodo();
+}
+```
+- Injecao de dependencias -> quem vai dizer qual é o metodo a ser chamado é a classe que implementa a interface.
+
+### Boas Práticas em interface e Herança
+- a Rigidez da Herança é solucionada com interfaces, facilita o acrescimo de funcionalidades do seu sistema. Manutenção e evolução.	
+- Prefira Composicao x Heranca de classes -> effective java
+-composicao -> Tem um -> basta uma classe ter um atributo de outra classe
+- Heranca - É um -> a classe tem que extends outra
+    - qualquer alteracao na super classe resulta em alteracoes no funcionamento das sub classes
+- Para a flexibilidade ser alta, criamos associacoes da classe com uma interface e esta interface é implementada por N classes. Assim a classe TEM UM atributo do tipo da interface.
+- Fica mais facil de testar as pequenas partes e ver se tal metodo é chamado.
+
+### delegacao de metodos
+- delegar metodos de uma classe para outra classe 
+- a classe passada como argumento no construtor, é a classe que vai realizar o trabalho, e a classe que recebe a instancia dessa classe, vai delegar o trabalho para ela.
+```java
+public class ContaDecorator {
+    private final ContaEspecial contaEspecial;
+    public Conta(ContaEspecial contaEspecial) {
+        this.contaEspecial = contaEspecial;
+    }
+    public double getSaldo() {
+        return contaEspecial.getSaldo();
+    }
+    public void deposita(double valor) {
+        contaEspecial.deposita(valor);
+    }
+}
+```
+### Decorator Pattern
+- Padrao que recebe uma classe no construtor e Embrulha ela usando os Delgates para realizar o trabalho.
+- sintaxe: classeDecorator
+- Decorator -> é uma classe que recebe uma instancia de outra classe no construtor e delega os metodos para ela.
+
