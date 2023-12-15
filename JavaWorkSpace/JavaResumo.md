@@ -605,3 +605,213 @@ public interface ClasseInterface {
 ```
 - `Caso nao coloquemo public abstract na declaracao do metodo, o compilador coloca implicitamente em INTERFACES`
 - ``Interfaces potencializam o Polimorfismo`` ao seu nivel MAXIMO!
+- ``Interfaces`` -> nao podem ser instanciadas, somente implementadas por classes concretas.
+-  É possivel implementar os metodos abstratos na propria interface a partir do java 8, mas nao é uma boa pratica. 
+- ![Alt text](image.png)
+- Classe Servico conta Usa instancias das classes documentoPagavel e Beneficiario, Isso explica as setas apontando (seta tracejada com triangulo vazio)  de Servico para essas duas classes(Associacoes normais). Ja heranca(Seta inteira com trinagulo vazio) seria a seta -|>
+- Herança : ![Alt text](image-3.png) 
+- Interface: - - - -|>
+- ``Servico Conta Pagar TEM UM DocumentoPagavel e TEM UM Beneficiario, pois sao atributos da classe ServicoContaPagar.``
+- Quando voce implementa uma classe, ``nos argumentos do tipo da interfaces``, voce pode passar qualquer classe que implemente essa interface, pois ela cumpre o contrato da interface. Realiza um upcasting implicito nesses parametros.
+- Usar interfaces para definir os TIPOS PASSADOS POR PARAMETRO, para aumentar a flexibilidade do seu metodo. BAIXO ACOPLAMENTO.Quanto mais imports, mais acoplamento. exemplo: 
+- a classe que tem metodos com tipos de parametros da interface nao necessariamente implementa a interface, somente as classes que serao passadas como argumento implementam a interface.
+![Alt text](image-2.png)
+
+- Nesse exemplo: As classes Pix e Transferencia implementam MetodoPagamento, ServicoContaPagar Recebe no construtor a instancia de Pix ou de Transferencia (Pois o tipo MetodoPagamento 
+é somente a interface dos dois, para garantir a flexibilidade do metodo). 
+```Java
+public void metodo(ClasseInterface classeInterface){
+     classeInterface.metodo();
+}
+```
+- Injecao de dependencias -> quem vai dizer qual é o metodo a ser chamado é a classe que implementa a interface.
+
+### Boas Práticas em interface e Herança
+- a Rigidez da Herança é solucionada com interfaces, facilita o acrescimo de funcionalidades do seu sistema. Manutenção e evolução.	
+- Prefira Composicao x Heranca de classes -> effective java
+-composicao -> Tem um -> basta uma classe ter um atributo de outra classe
+- Heranca - É um -> a classe tem que extends outra
+    - qualquer alteracao na super classe resulta em alteracoes no funcionamento das sub classes
+- Para a flexibilidade ser alta, criamos associacoes da classe com uma interface e esta interface é implementada por N classes. Assim a classe TEM UM atributo do tipo da interface.
+- Fica mais facil de testar as pequenas partes e ver se tal metodo é chamado.
+- Evitar criar ``default methods em interfaces``, pois pode quebrar o codigo de todas as classes que implementam a interface.
+    - para corrigir, sobrescrever o metodo default na classe que implementa a interface.
+- ``NAO```` implementar interfaces`` ``somente`` ``para usar constantes!`` -> Ao implementar uma interface, a classe herda as constantes da interface!
+    - caso ache que as constantes sao muito relacionadas a classe, entao crie a classe com as proprias constantes.
+    - caso nao ache uma forte relacao, faca a importacao estatica das constantes da CLASSE FINAL com construtores PRIVADOS (nao pode ser herdada nem instanciada). -> classeFinal.constante
+
+- `Referencie objetos por suas interfaces` -> usar o tipo mais abstrato(interfaces) ao passar os argumentos para os metodos `public ClasseInterface finalizar(ClasseInterface classeInterface){}`  
+- dar prioridade a passar INTERFACES nos retornos de metodos e nos argumentos de metodos.
+- Dar prioridade ao criar novas instancias, declarar variaveis com tipo da interface, ao inves de criar com o tipo da classe concreta. `ClasseInterface novoObjeto = new ClasseConcreta();`
+    - Somente usar a classe concreta na Instanciacao! como o exemplo acima.
+    - Dessa maneira, para trocar o tipo de objeto, basta trocar a classe concreta na instanciação, sem alterar o codigo que usa o objeto. 
+
+
+
+### delegacao de metodos
+- delegar metodos de uma classe para outra classe 
+- a classe passada como argumento no construtor, é a classe que vai realizar o trabalho, e a classe que recebe a instancia dessa classe, vai delegar o trabalho para ela.
+```java
+public class ContaDecorator {
+    private final ContaEspecial contaEspecial;
+    public Conta(ContaEspecial contaEspecial) {
+        this.contaEspecial = contaEspecial;
+    }
+    public double getSaldo() {
+        return contaEspecial.getSaldo();
+    }
+    public void deposita(double valor) {
+        contaEspecial.deposita(valor);
+    }
+}
+```
+### Decorator Pattern
+- Padrao que recebe uma classe no construtor e Embrulha ela usando os Delegates para realizar o trabalho.
+- sintaxe: classeDecorator
+- Decorator -> é uma classe que recebe uma instancia de outra classe no construtor e delega os metodos para ela.
+
+
+## Excecoes
+- ``Excecoes`` -> sao erros que ocorrem em tempo de execucao, que podem ser tratados.
+- IllegalArgumentException -> excecao de argumento invalido -> exceptions sao objetos e devem ser instanciados
+```java
+IllegalArgumentException exception = new IllegalArgumentException("Argumento invalido");
+throw exception;
+// Para nao precisarmos instanciar antes de lancar USAMOS
+throw new IllegalArgumentException("Argumento invalido");
+```
+- A excecao para o fluxo de execucao e vai para a classe MAIN ou para bloco catch, e procura um tratamento. se nao houver o bloco catch para TRATAMENTO, o programa para de executar.
+
+- IllegalStateException -> excecao de estado invalido -> quando o estado do objeto nao permite a execucao do metodo.
+
+- NullPointerException -> excecao de referencia nula -> quando o objeto nao foi instanciado e tentamos acessar um metodo ou atributo dele.
+    - Objects.requireNonNull(objeto, "Mensagem de erro"); -> verifica se o objeto é nulo, se for, lanca a excecao com a mensagem de erro.
+        - O mesmo que o if que checa a nulidade.
+- ``Quando uma excecao é lancada. o fluxo de controle da Call stack vai para o metodo anterior, e assim por diante, ate chegar na classe main, se nao houver tratamento ou captura, o programa para de executar.``
+- Stacktrace -> rastro de execucao, mostra o caminho que o fluxo de execucao percorreu ate chegar na excecao.
+    - Fica em vermelho no console.
+### Try Catch 
+- ``Try Catch`` -> bloco de codigo que tenta executar o codigo dentro do bloco try, e caso ocorra uma excecao, o fluxo de execucao vai para o bloco catch, que captura a excecao e trata.
+```java
+try {
+    // codigo que pode lancar uma excecao
+    // abaixo -> catch com TIpo de excecao que queremos capturar
+} catch (Exception e) {
+    // tratamento da excecao
+    // toda excecao tem uma mensagem, que pode ser acessada com e.getMessage()
+    system.out.println(e.getMessage());
+}
+```
+- caso o codigo dentro do try lance exececao, o fluxo de execucao vai para o catch( Ao contrario de ir para o metodo abaixo na call stack)  e fazemos o tratamento da excecao, e depois continua a execucao do codigo normalmente.
+    - depois do tratamento o fluxo de execucao continua normalmente, como se nada de errado tivesse acontecido.  
+- ` Onde na pilha de chamada usar o TRY CATCH?`
+    - Não tem uma regra, depende do contexto. Olhar se o método tem como tratar a exceção( tem informações suficientes), se não tiver, passar para o método que o chamou, e assim por diante. 
+- Dentro do bloco ``CATCH`` -> devemos tentar corrigir o problema, ou lancar uma nova excecao. Caso nao seja possivel devemos registrar o erro em um log.
+- `PrintStackTrace()` -> imprime o rastro de execucao da excecao, para sabermos onde ocorreu o erro.
+    - Ele nao imprimre na saida padrao, Imprime na saida de Erro. System.err
+- Multiplos Catchs -> podemos ter varios catch no mesmo try para tratar excecoes diferentes. Exemplo:
+```java 
+try {
+    // codigo que pode lancar uma excecao
+    // abaixo -> catch com TIpo de excecao que queremos capturar
+} catch (Exception e) {
+  
+    system.out.println(e.getMessage());
+} catch (NullPointerException e) {
+   
+    system.out.println(e.getMessage());
+
+}
+```
+### Hierarquia de Excecoes
+![Alt text](image-4.png)
+- ``IllegalArgumentException -> RuntimeException -> Exception -> Throwable -> Object``
+- Diferente de Dart, so se pode capturar classes que sao FILHAS  de `Throwable` -> `Exception` e `Error`
+#### Unchecked Exceptions
+-`` Herdou RunTimeException -> É Uncheckd Exception -> nao obriga a captura ou tratamento``.
+- Excecoes que ``nao obrigam a captura ou tratamento``, pois sao excecoes que nao podem ser previstas, como erros de programacao.
+- Sempre que uma ``excecao herdar RuntimeException, ela sera uma excecao nao checada``.
+
+#### Checked Exceptions
+- ``Nao herdou RunTimeException / Herda somente Exception -> É Checked Exception -> obriga a captura ou tratamento`` OU PROPAGAR ``TRHOW`` PRO METODO CHAMADOR.
+- Excecoes que ``obrigam a captura ou tratamento``, pois sao excecoes que podem ser previstas, como erros de usuario.
+
+#### Error
+- No geral nao se captura nem trata Errors.
+- São erros que ocorrem em tempo de execucao, que nao podem ser tratados, como erros de hardware, ou erros de programacao. OutOfMemoryError, StackOverflowError, VirtualMachineError etc.
+
+### Capturando Checked Exceptions
+- Classe Path -> representa um caminho de arquivo ou diretorio no sistema de arquivos.
+    - Path path = Paths.of("/Users/Diretorio/teste.txt "); -> cria um objeto Path com o caminho do arquivo.
+    - Files.createFile(path); -> cria o arquivo no caminho especificado.
+    - Caso voce declare o arquivo dentro do try, ele so vai existir dentro do try, entao nao sera possivel acessar o arquivo fora do try. Como fizemos abaixo:
+    ```java
+    // faca um tratamento para a excecao checked IOException
+    Path path = Paths.of("/Users/Diretorio/teste.txt ");
+    try {
+        Files.createFile(path);
+    } catch (IOException e) {
+        System.out.println("Erro ao criar o arquivo: "e.getMessage());
+        e.printStackTrace();
+    }
+    System.out.println(path);
+    ```
+### Excecoes Customizadas
+- Criar uma ``classe que herda  RuntimeException``, para criar uma excecao customizada.
+```java
+public class SaldoInsuficienteException extends RuntimeException {
+    public SaldoInsuficienteException(String message) {
+        super(message);
+    }
+}
+```
+- Assim podemos usar o throw new SaldoInsuficienteException("Mensagem de erro"); para lancar a excecao.
+- ``Boa pratica`` -> criar uma classe de excecao para cada tipo de excecao que voce quer lancar, para que o tratamento seja mais especifico.
+#### Variaveis de instancia em excecoes customizadas
+- Podemos criar variaveis de instancia na classe de excecao, para passar informacoes mais especificas sobre a excecao. 
+- Assim temos que passar essas informacoes no construtor da classe quando usarmos o throw new SaldoInsuficienteException("Mensagem de erro", this.saldoAtual, this.valorSaque);
+```java
+public class SaldoInsuficienteException extends RuntimeException {
+    private final double saldoAtual;
+    private final double valorSaque;
+
+    public SaldoInsuficienteException(String message, double saldoAtual, double valorSaque) {
+        super(message);
+        this.saldoAtual = saldoAtual;
+        this.valorSaque = valorSaque;
+    }
+
+    public double getSaldoAtual() {
+        return saldoAtual;
+    }
+
+    public double getValorSaque() {
+        return valorSaque;
+    }
+}
+```
+#### Herdando CheckedExceptions
+- ``Herdando Exception`` -> Checked Exception -> obriga a captura ou tratamento.
+- Nao faz sentido capturar a excecao no proprio codigo que a lancou, entao devemos propagar a excecao para o metodo que chamou o metodo que lancou a excecao.
+- ``Propagar a excecao`` -> usar a palavra reservada ``throws`` no metodo que lanca a excecao.
+- Assim propaga a excecao para frente da call stack e quem chamar o metodo deve tratar.
+- ``Ou trata com catch ou propaga pra frente com o throws.``
+```java
+// Sempre que ocorrer uma excecao com o metodo, ele nao vai tratar, vai propagar a excecao para o metodo que o chamou, e assim por diante.
+// SE LE -> o metodo() pode lancar a excecao SaldoInsuficienteException
+public void metodo() throws SaldoInsuficienteException {
+    // codigo que pode lancar uma excecao
+    throw new SaldoInsuficienteException("Saldo insuficiente", this.saldoAtual, this.valorSaque);
+}
+public void metodo2() {
+    try {
+        metodo();
+    } catch (SaldoInsuficienteException e) {
+        System.out.println(e.getMessage());
+    }
+}
+```
+- ``Boa pratica`` -> `LANCAR a excecao o MAIS CEDO POSSIVEL`, no nivel mais baixo da pilha de chamada. BAIXO NIVEL
+- ``Boa pratica`` -> `CAPTURAR a excecao o MAIS TARDE POSSIVEL`, no nivel mais alto da pilha de chamada. Mas nao quer dizer sempre no metodo main. ALTO NIVEL
+
+
